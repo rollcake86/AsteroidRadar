@@ -8,6 +8,7 @@ import com.udacity.asteroidradar.network.NasaApiService
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import org.json.JSONObject
+import timber.log.Timber
 
 class NasaRepository(private val database: AsteroidDatabase) {
 

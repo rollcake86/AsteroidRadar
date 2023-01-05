@@ -10,6 +10,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import timber.log.Timber
 import java.io.IOException
 
 class MainViewModel(application: Application) : AndroidViewModel(application) {
@@ -33,7 +34,9 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             withContext(Dispatchers.IO) {
                 try {
                     val asteroidList =  respository.getAsteroidFromNasa(NasaApi.retrofitService)
+                    Timber.i("${asteroidList.size}")
                     database.asteroidDatabaseDao.insertAll(*asteroidList.toTypedArray())
+                    _asteroidList.postValue(asteroidList)
                 } catch (e: IOException) {
                     _asteroidList.value = listOf()
                 }
