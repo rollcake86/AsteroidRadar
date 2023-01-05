@@ -1,19 +1,21 @@
 package com.udacity.asteroidradar.main
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import android.app.Application
+import androidx.lifecycle.*
 import com.udacity.asteroidradar.Asteroid
+import com.udacity.asteroidradar.database.AsteroidDatabase
 import com.udacity.asteroidradar.network.NasaApi
 import com.udacity.asteroidradar.search.NasaRepository
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.IOException
 
-class MainViewModel : ViewModel() {
+class MainViewModel(application: Application) : AndroidViewModel(application) {
 
-    private val respository = NasaRepository(NasaApi.retrofitService)
+    private val database = AsteroidDatabase.getInstance(application)
+    private val respository = NasaRepository(database)
     private var currentJob: Job? = null
 
     private val _asteroidList = MutableLiveData<List<Asteroid>>()
@@ -28,17 +30,13 @@ class MainViewModel : ViewModel() {
     private fun onQueryChanged() {
         currentJob?.cancel() // if a previous query is running cancel it before starting another
         currentJob = viewModelScope.launch {
-            try {
-//                _asteroidList.value =
-//                repository.getFilters().let {
-//                    // only update the filters list if it's changed since the last time
-//                    if (it != _regionList.value) {
-//                        _regionList.value = it
-//                    }
-//                }
-                respository.getAsteroidFromNasa()
-            } catch (e: IOException) {
-                _asteroidList.value = listOf()
+            withContext(Dispatchers.IO) {
+                try {
+                    val asteroidList =  respository.getAsteroidFromNasa(NasaApi.retrofitService)
+                    database.asteroidDatabaseDao.insertAll(*asteroidList.toTypedArray())
+                } catch (e: IOException) {
+                    _asteroidList.value = listOf()
+                }
             }
         }
     }
