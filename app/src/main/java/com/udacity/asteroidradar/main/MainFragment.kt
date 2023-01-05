@@ -2,6 +2,7 @@ package com.udacity.asteroidradar.main
 
 import android.os.Bundle
 import android.view.*
+import android.widget.ImageView
 import androidx.annotation.LayoutRes
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
@@ -10,6 +11,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.squareup.picasso.Picasso
 import com.udacity.asteroidradar.Asteroid
 import com.udacity.asteroidradar.R
 import com.udacity.asteroidradar.database.AsteroidDatabase
@@ -23,21 +25,23 @@ class MainFragment : Fragment() {
         ViewModelProvider(this).get(MainViewModel::class.java)
     }
 
-    private var asteroidListAdapter : AsteroidListAdapter? = null
+    private var asteroidListAdapter: AsteroidListAdapter? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel.asteroidList.observe(viewLifecycleOwner , Observer {
-            asteroids ->
-                Timber.i("${asteroids.size}")
+        viewModel.asteroidList.observe(viewLifecycleOwner, Observer { asteroids ->
             asteroids?.apply {
                 asteroidListAdapter?.asteroids = asteroids
-        }
+            }
         })
+
+
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         val binding = FragmentMainBinding.inflate(inflater)
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
@@ -47,6 +51,10 @@ class MainFragment : Fragment() {
 
         asteroidListAdapter = AsteroidListAdapter(AsteroidClick {
 
+        })
+
+        viewModel.todayImage.observe(viewLifecycleOwner, Observer {
+            Picasso.with(context).load(it.url).into(binding.root.findViewById<ImageView>(R.id.activity_main_image_of_the_day))
         })
 
         setHasOptionsMenu(true)
@@ -69,28 +77,35 @@ class MainFragment : Fragment() {
     }
 }
 
-class AsteroidClick(val block: (Asteroid) -> Unit){
+class AsteroidClick(val block: (Asteroid) -> Unit) {
 
     fun onClick(asteroid: Asteroid) = block(asteroid)
 }
 
-class AsteroidListViewHolder(val viewDataBinding: AsteroidItemBinding) : RecyclerView.ViewHolder(viewDataBinding.root){
+class AsteroidListViewHolder(val viewDataBinding: AsteroidItemBinding) :
+    RecyclerView.ViewHolder(viewDataBinding.root) {
     companion object {
         @LayoutRes
         val LAYOUT = R.layout.asteroid_item
     }
 }
 
-class AsteroidListAdapter(val callback: AsteroidClick) : RecyclerView.Adapter<AsteroidListViewHolder>() {
+class AsteroidListAdapter(val callback: AsteroidClick) :
+    RecyclerView.Adapter<AsteroidListViewHolder>() {
 
-    var asteroids : List<Asteroid> = emptyList()
+    var asteroids: List<Asteroid> = emptyList()
         set(value) {
             field = value
             notifyDataSetChanged()
         }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AsteroidListViewHolder {
-        val withDataBinding : AsteroidItemBinding = DataBindingUtil.inflate(LayoutInflater.from(parent.context) , AsteroidListViewHolder.LAYOUT , parent, false)
+        val withDataBinding: AsteroidItemBinding = DataBindingUtil.inflate(
+            LayoutInflater.from(parent.context),
+            AsteroidListViewHolder.LAYOUT,
+            parent,
+            false
+        )
         return AsteroidListViewHolder(withDataBinding)
     }
 

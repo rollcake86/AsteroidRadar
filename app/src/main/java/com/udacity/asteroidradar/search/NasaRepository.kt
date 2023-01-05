@@ -1,16 +1,14 @@
 package com.udacity.asteroidradar.search
 
-import android.util.Log
 import com.udacity.asteroidradar.Asteroid
+import com.udacity.asteroidradar.TodayImage
 import com.udacity.asteroidradar.api.parseAsteroidsJsonResult
-import com.udacity.asteroidradar.database.AsteroidDatabase
 import com.udacity.asteroidradar.network.NasaApiService
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import org.json.JSONObject
-import timber.log.Timber
 
-class NasaRepository(private val database: AsteroidDatabase) {
+class NasaRepository() {
 
     suspend fun getAsteroidFromNasa(nasaApiService: NasaApiService): ArrayList<Asteroid> {
         val request = nasaApiService.getAsteroid()
@@ -23,4 +21,14 @@ class NasaRepository(private val database: AsteroidDatabase) {
         return result
     }
 
+    suspend fun getImageOfDay(nasaApiService: NasaApiService): TodayImage {
+        val request = nasaApiService.getImageOfDay()
+        val result = coroutineScope {
+            val deferred = async {
+                request.await()
+            }
+            deferred.await()
+        }
+        return result
+    }
 }

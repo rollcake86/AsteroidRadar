@@ -36,7 +36,7 @@ class RefreshDataWorker(appContext: Context, params: WorkerParameters):
      */
     override suspend fun doWork(): Result {
         val database =  AsteroidDatabase.getInstance(applicationContext)
-        val repository = NasaRepository(database)
+        val repository = NasaRepository()
         return try {
             val asteroidList =  repository.getAsteroidFromNasa(NasaApi.retrofitService)
             database.asteroidDatabaseDao.insertAll(*asteroidList.toTypedArray())
