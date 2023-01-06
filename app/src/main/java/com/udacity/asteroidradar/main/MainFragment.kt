@@ -9,6 +9,7 @@ import androidx.databinding.ViewDataBinding
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.squareup.picasso.Picasso
@@ -45,20 +46,15 @@ class MainFragment : Fragment() {
         val binding = FragmentMainBinding.inflate(inflater)
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
-        val application = requireNotNull(this.activity).application
-        val dataSource = AsteroidDatabase.getInstance(application).asteroidDatabaseDao
-
 
         asteroidListAdapter = AsteroidListAdapter(AsteroidClick {
-
+            this.findNavController().navigate(MainFragmentDirections.actionShowDetail(it))
         })
 
         viewModel.todayImage.observe(viewLifecycleOwner, Observer {
             Picasso.with(context).load(it.url).into(binding.root.findViewById<ImageView>(R.id.activity_main_image_of_the_day))
         })
-
         setHasOptionsMenu(true)
-
         binding.root.findViewById<RecyclerView>(R.id.asteroid_recycler).apply {
             layoutManager = LinearLayoutManager(context)
             adapter = asteroidListAdapter

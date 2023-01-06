@@ -3,7 +3,7 @@ package com.udacity.asteroidradar.main
 import android.app.Application
 import androidx.lifecycle.*
 import com.udacity.asteroidradar.Asteroid
-import com.udacity.asteroidradar.TodayImage
+import com.udacity.asteroidradar.PictureOfDay
 import com.udacity.asteroidradar.database.AsteroidDatabase
 import com.udacity.asteroidradar.network.NasaApi
 import com.udacity.asteroidradar.search.NasaRepository
@@ -17,12 +17,12 @@ import java.io.IOException
 class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     private val database = AsteroidDatabase.getInstance(application)
-    private val respository = NasaRepository()
+    private val respository = NasaRepository(database)
     private var currentJob: Job? = null
 
-    private val _todayImage = MutableLiveData<TodayImage>()
+    private val _todayImage = MutableLiveData<PictureOfDay>()
 
-    val todayImage: LiveData<TodayImage>
+    val todayImage: LiveData<PictureOfDay>
         get() = _todayImage
 
     private val _asteroidList = MutableLiveData<List<Asteroid>>()
@@ -31,6 +31,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         get() = _asteroidList
 
     init {
+        _asteroidList.value =  respository.asteroids.value
         onQueryChanged()
     }
 
@@ -43,7 +44,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                     database.asteroidDatabaseDao.insertAll(*asteroidList.toTypedArray())
                     _asteroidList.postValue(asteroidList)
                 } catch (e: IOException) {
-                    _asteroidList.value = listOf()
+                    _asteroidList.postValue(listOf())
                 }
                 try {
                     val dayOfImage = respository.getImageOfDay(NasaApi.retrofitService)

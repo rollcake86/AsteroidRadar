@@ -7,7 +7,7 @@ import com.udacity.asteroidradar.Asteroid
 @Dao
 interface AsteroidDatabaseDao {
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insert(asteroid : Asteroid)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
@@ -19,7 +19,7 @@ interface AsteroidDatabaseDao {
     @Delete
     fun delete(asteroid: Asteroid)
 
-    @Query("SELECT * FROM asteroid_table")
+    @Query("SELECT * FROM ASTEROID_TABLE")
     fun getAsteroidList() : LiveData<List<Asteroid>>
 
 }
