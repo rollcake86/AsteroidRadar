@@ -11,12 +11,10 @@ import com.udacity.asteroidradar.network.NasaApiService
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import org.json.JSONObject
-import timber.log.Timber
 
 class NasaRepository(private val database: AsteroidDatabase) {
 
     val asteroids : LiveData<List<Asteroid>> = Transformations.map(database.asteroidDatabaseDao.getAsteroidList()) {
-        Timber.i("asteroid!! ${it.size}")
         it.asDomainModel()
     }
 

@@ -19,7 +19,7 @@ interface AsteroidDatabaseDao {
     @Delete
     fun delete(asteroid: Asteroid)
 
-    @Query("SELECT * FROM ASTEROID_TABLE")
+    @Query("select * from asteroid_table")
     fun getAsteroidList() : LiveData<List<Asteroid>>
 
 }

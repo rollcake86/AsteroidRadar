@@ -1,6 +1,7 @@
 package com.udacity.asteroidradar.main
 
 import android.app.Application
+import android.util.Log
 import androidx.lifecycle.*
 import com.udacity.asteroidradar.Asteroid
 import com.udacity.asteroidradar.PictureOfDay
@@ -31,10 +32,9 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         get() = _asteroidList
 
     init {
-        _asteroidList.value =  respository.asteroids.value
         onQueryChanged()
     }
-
+    val asteroidListForDB =  respository.asteroids
     private fun onQueryChanged() {
         currentJob?.cancel() // if a previous query is running cancel it before starting another
         currentJob = viewModelScope.launch {

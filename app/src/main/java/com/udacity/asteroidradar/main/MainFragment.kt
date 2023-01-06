@@ -35,8 +35,11 @@ class MainFragment : Fragment() {
                 asteroidListAdapter?.asteroids = asteroids
             }
         })
-
-
+        viewModel.asteroidListForDB.observe(viewLifecycleOwner) { asteroids ->
+            asteroids?.apply {
+                asteroidListAdapter?.asteroids = asteroids
+            }
+        }
     }
 
     override fun onCreateView(
