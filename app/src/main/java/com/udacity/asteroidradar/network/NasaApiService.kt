@@ -10,15 +10,16 @@ import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import retrofit2.converter.scalars.ScalarsConverterFactory
 import retrofit2.http.GET
+import retrofit2.http.Query
 
 interface NasaApiService {
-    @GET("/neo/rest/v1/feed?start_date=2023-01-05&end_date=2023-01-07&api_key=fzVDlewl5pMQ2K7TL7tPKe1jmhTKSxaqu7q5SSEh")
-    fun getAsteroid():
+    @GET("/neo/rest/v1/feed")
+    fun getAsteroidAsync(@Query("start_date") startTime : String?, @Query("end_date") endTime : String?, @Query("api_key") apiKey : String?):
             Deferred<String>
 
 
     @GET("/planetary/apod?api_key=fzVDlewl5pMQ2K7TL7tPKe1jmhTKSxaqu7q5SSEh")
-    fun getImageOfDay():
+    fun getImageOfDayAsync():
             Deferred<PictureOfDay>
 
 }

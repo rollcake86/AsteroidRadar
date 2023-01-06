@@ -19,7 +19,7 @@ interface AsteroidDatabaseDao {
     @Delete
     fun delete(asteroid: Asteroid)
 
-    @Query("select * from asteroid_table")
+    @Query("select * from asteroid_table where closeApproachDate >= date('now')")
     fun getAsteroidList() : LiveData<List<Asteroid>>
 
 }
