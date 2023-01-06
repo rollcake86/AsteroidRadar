@@ -25,15 +25,15 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     val todayImage: LiveData<PictureOfDay>
         get() = _todayImage
 
-    private val _asteroidList = MutableLiveData<List<Asteroid>>()
-
-    val asteroidList: LiveData<List<Asteroid>>
-        get() = _asteroidList
+//    private val _asteroidList = MutableLiveData<List<Asteroid>>()
+//
+//    val asteroidList: LiveData<List<Asteroid>>
+//        get() = _asteroidList
 
     init {
         onQueryChanged()
     }
-    val asteroidListForDB =  respository.asteroids
+    var asteroidListForDB =  respository.asteroids
     private fun onQueryChanged() {
         currentJob?.cancel() // if a previous query is running cancel it before starting another
         currentJob = viewModelScope.launch {
@@ -41,9 +41,10 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 try {
                     val asteroidList = respository.getAsteroidFromNasa(NasaApi.retrofitService)
                     database.asteroidDatabaseDao.insertAll(*asteroidList.toTypedArray())
-                    _asteroidList.postValue(asteroidList)
+//                    _asteroidList.postValue(asteroidList)
+                    asteroidListForDB =  respository.asteroids
                 } catch (e: IOException) {
-                    _asteroidList.postValue(listOf())
+//                    _asteroidList.postValue(listOf())
                 }
                 try {
                     val dayOfImage = respository.getImageOfDay(NasaApi.retrofitService)

@@ -30,12 +30,13 @@ class MainFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel.asteroidList.observe(viewLifecycleOwner, Observer { asteroids ->
-            asteroids?.apply {
-                asteroidListAdapter?.asteroids = asteroids
-            }
-        })
+//        viewModel.asteroidList.observe(viewLifecycleOwner, Observer { asteroids ->
+//            asteroids?.apply {
+//                asteroidListAdapter?.asteroids = asteroids
+//            }
+//        })
         viewModel.asteroidListForDB.observe(viewLifecycleOwner) { asteroids ->
+            Timber.i("asteroids count ${asteroids.size}")
             asteroids?.apply {
                 asteroidListAdapter?.asteroids = asteroids
             }
